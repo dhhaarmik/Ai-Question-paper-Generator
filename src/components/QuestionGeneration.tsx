@@ -84,11 +84,20 @@ const QuestionGeneration: React.FC<QuestionGenerationProps> = ({
   };
 
   useEffect(() => {
-    checkServer().then(isOnline => {
-      if (isOnline) {
-        generateQuestionPaper();
+    const run = async () => {
+      try {
+        const isOnline = await checkServer();
+        if (isOnline) {
+          await generateQuestionPaper();
+        } else {
+          console.error("Server is offline");
+        }
+      } catch (err) {
+        console.error("Error during startup:", err);
       }
-    });
+    };
+
+    run();
   }, []);
 
   const retryGeneration = () => {
