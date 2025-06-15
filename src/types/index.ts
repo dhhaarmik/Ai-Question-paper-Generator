@@ -5,6 +5,7 @@ export interface ExamDetails {
   examDate: string;
   examDuration: string;
   totalMarks: number;
+  openaiApiKey?: string; // Made optional since we'll use environment variable
 }
 
 export interface QuestionConfig {

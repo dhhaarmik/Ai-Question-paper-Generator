@@ -2,10 +2,6 @@
   "version": 2,
   "builds": [
     {
-      "src": "server/index.js",
-      "use": "@vercel/node"
-    },
-    {
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
@@ -16,7 +12,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/server/index.js"
+      "dest": "/api/$1"
     },
     {
       "src": "/(.*)",
@@ -27,8 +23,11 @@
     "OPENAI_API_KEY": "@openai-api-key"
   },
   "functions": {
-    "server/index.js": {
+    "api/generate-questions.js": {
       "maxDuration": 60
+    },
+    "api/health.js": {
+      "maxDuration": 10
     }
   }
 }

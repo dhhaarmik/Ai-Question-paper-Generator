@@ -1,29 +1,25 @@
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
 import OpenAI from 'openai';
-
-dotenv.config();
-
-const app = express();
-const PORT = process.env.PORT || 3001;
 
 // Initialize OpenAI with API key from environment
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
-// Middleware
-app.use(cors());
-app.use(express.json({ limit: '50mb' }));
+export default async function handler(req, res) {
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', message: 'Server is running' });
-});
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
 
-// Generate questions endpoint
-app.post('/api/generate-questions', async (req, res) => {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
   try {
     const { examDetails, questionConfig, extractedTexts } = req.body;
 
@@ -82,7 +78,7 @@ app.post('/api/generate-questions', async (req, res) => {
       error: 'Failed to generate questions. Please try again.' 
     });
   }
-});
+}
 
 // Helper functions for prompt creation and parsing
 function createMCQPrompt(examDetails, mcqConfig, content) {
@@ -243,7 +239,3 @@ function parseLongAnswerResponse(response, longConfig) {
 
   return questions;
 }
-
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
